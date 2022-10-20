@@ -60,8 +60,9 @@ const inputTransferAmount = document.querySelector(".form__input--amount");
 const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
-
-// Display movments:
+/************************************************* */
+// Display movements:
+/***************************************** */
 const displayMovements = function (movements) {
   containerMovements.innerHTML = ""; // empty the container
   movements.forEach(function (element, index) {
@@ -79,7 +80,41 @@ const displayMovements = function (movements) {
 };
 displayMovements(account1.movements);
 
+/*****************************
+      Display Balance
+************************************/
+
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce(function (acc, cur) {
+    return acc + cur; //we return the accumulator
+  }, 0);
+  console.log(balance);
+  labelBalance.textContent = `${balance} €`;
+};
+console.log(account1.movements);
+calcDisplayBalance(account1.movements);
+
+/*****************************
+      Display Summary
+************************************/
+const calcDisplaySummary = function (movements) {
+  const incoms = movements
+    .filter((val) => val > 0)
+    .reduce((acc, curr) => acc + curr);
+  console.log(incoms);
+  labelSumIn.textContent = `${incoms}€`;
+  const outcoms = movements
+    .filter((val) => val < 0)
+    .reduce((acc, curr) => acc + curr);
+  console.log(outcoms);
+  labelSumOut.textContent = `${-outcoms}€`;
+};
+
+calcDisplaySummary(account1.movements);
+/**************************************** */
 //compute the user name
+/********************************* */
+
 const CreateUsernames = function (accs) {
   accs.forEach(function (acc) {
     acc.username = acc.owner
