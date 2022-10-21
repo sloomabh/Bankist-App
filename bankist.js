@@ -78,39 +78,39 @@ const displayMovements = function (movements) {
     containerMovements.insertAdjacentHTML("afterbegin", html); // with beforeend --> the order will change to the invers
   });
 };
-displayMovements(account1.movements);
 
 /*****************************
       Display Balance
 ************************************/
 
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce(function (acc, cur) {
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce(function (acc, cur) {
     return acc + cur; //we return the accumulator
   }, 0);
-  console.log(balance);
-  labelBalance.textContent = `${balance} €`;
+
+  labelBalance.textContent = `${acc.balance} €`;
 };
-console.log(account1.movements);
-calcDisplayBalance(account1.movements);
 
 /*****************************
       Display Summary
 ************************************/
-const calcDisplaySummary = function (movements) {
-  const incoms = movements
+const calcDisplaySummary = function (acc) {
+  const incoms = acc.movements
     .filter((val) => val > 0)
     .reduce((acc, curr) => acc + curr);
-  console.log(incoms);
+
   labelSumIn.textContent = `${incoms}€`;
-  const outcoms = movements
+
+  const outcoms = acc.movements
     .filter((val) => val < 0)
     .reduce((acc, curr) => acc + curr);
   console.log(outcoms);
   labelSumOut.textContent = `${-outcoms}€`;
+
+  const interest = (incoms * acc.interestRate) / 100;
+  labelSumInterest.textContent = interest;
 };
 
-calcDisplaySummary(account1.movements);
 /**************************************** */
 //compute the user name
 /********************************* */
@@ -126,16 +126,68 @@ const CreateUsernames = function (accs) {
 };
 CreateUsernames(accounts);
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
-/*
-const currencies = new Map([
-  ["USD", "United States dollar"],
-  ["EUR", "Euro"],
-  ["GBP", "Pound sterling"],
-]);
+const updateUI = function (acc) {
+  // Display movements
+  displayMovements(acc.movements);
+  //Display balance
+  calcDisplayBalance(acc);
+  //Display summary
+  calcDisplaySummary(acc);
+};
+/*******************************************
+ *   Event handlers
+ *********************************************/
+let currentAccount;
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-*/
-/////////////////////////////////////////////////
+btnLogin.addEventListener("click", function (e) {
+  //prevent form from submitting
+  e.preventDefault(); // the default behaviour for the submit button is to reload
+  currentAccount = accounts.find(
+    (acc) => acc.username === inputLoginUsername.value
+  );
+
+  //optionalchaining if the currentaccount is exist
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    //Display UI and message
+    labelWelcome.textContent = `Welcome back ,${
+      currentAccount.owner.split(" ")[0]
+    }`;
+    containerApp.style.opacity = 1;
+    //Clear fields
+    inputLoginUsername.value = inputLoginPin.value = "";
+
+    // Update UI
+    updateUI(currentAccount);
+  } else {
+    alert("Wrong username or password");
+    //Clear fields
+    inputLoginUsername.value = inputLoginPin.value = "";
+  }
+});
+
+/*****  Transfer money */
+
+btnTransfer.addEventListener("click", function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(
+    (acc) => acc.username === inputTransferTo.value
+  );
+  inputTransferAmount.value = inputTransferTo.value = "";
+  if (
+    amount > 0 &&
+    receiverAcc &&
+    currentAccount.balance >= amount &&
+    receiverAcc?.username !== currentAccount.username
+  ) {
+    // Doing the transfer
+    currentAccount.movements.push(-amount);
+    receiverAcc.movements.push(amount);
+    // Update UI
+    updateUI(currentAccount);
+  }
+  // // if (accTo && inputTransferAmount.value != 0) {
+  // //   accTo.movements.push(Number(inputTransferAmount.value));
+  // //   currentAccount.movements.push(-Number(inputTransferAmount.value));
+  //   }
+});
