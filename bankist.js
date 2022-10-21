@@ -125,7 +125,7 @@ const CreateUsernames = function (accs) {
   });
 };
 CreateUsernames(accounts);
-
+/******************************************************* */
 const updateUI = function (acc) {
   // Display movements
   displayMovements(acc.movements);
@@ -137,6 +137,8 @@ const updateUI = function (acc) {
 /*******************************************
  *   Event handlers
  *********************************************/
+
+//***   Login  **********/
 let currentAccount;
 
 btnLogin.addEventListener("click", function (e) {
@@ -186,8 +188,32 @@ btnTransfer.addEventListener("click", function (e) {
     // Update UI
     updateUI(currentAccount);
   }
-  // // if (accTo && inputTransferAmount.value != 0) {
-  // //   accTo.movements.push(Number(inputTransferAmount.value));
-  // //   currentAccount.movements.push(-Number(inputTransferAmount.value));
-  //   }
+});
+/********  TAKE LOAN   *********** */
+//because our bank has a rule, which says that it only grants a loan if there at least one deposit with at least 10% of the requested loan amount.
+
+btnLoan.addEventListener("click", function (e) {
+  console.log("hai");
+});
+
+/****  DELETE account */
+
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername?.value === currentAccount.username &&
+    Number(inputClosePin?.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      (acc) => acc.username === currentAccount.username
+    );
+    //Delete account
+    accounts.splice(index, 1);
+
+    // Hide UI
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = "";
+  console.log(accounts);
 });
