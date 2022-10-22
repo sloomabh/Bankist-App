@@ -63,9 +63,11 @@ const inputClosePin = document.querySelector(".form__input--pin");
 /************************************************* */
 // Display movements:
 /***************************************** */
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = ""; // empty the container
-  movements.forEach(function (element, index) {
+
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements; //we took a copy (sloce methode or spread operator) for the array to sort it
+  movs.forEach(function (element, index) {
     const type = element > 0 ? "deposit" : "withdrawal";
     const html = `
     <div class="movements__row">
@@ -193,7 +195,18 @@ btnTransfer.addEventListener("click", function (e) {
 //because our bank has a rule, which says that it only grants a loan if there at least one deposit with at least 10% of the requested loan amount.
 
 btnLoan.addEventListener("click", function (e) {
-  console.log("hai");
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (
+    amount > 0 &&
+    currentAccount.movements.some((mov) => mov > amount * 0.1)
+  ) {
+    currentAccount.movements.push(amount);
+    // Update UI
+    updateUI(currentAccount);
+    //Clear fields
+    inputLoanAmount.value = inputLoginPin.value = "";
+  }
 });
 
 /****  DELETE account */
@@ -216,4 +229,12 @@ btnClose.addEventListener("click", function (e) {
   }
   inputCloseUsername.value = inputClosePin.value = "";
   console.log(accounts);
+});
+
+/******************* SORT movements ********** */
+let sorted = false;
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 });
