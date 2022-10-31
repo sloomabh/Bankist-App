@@ -1,0 +1,23 @@
+{
+  "name": "bankist-app",
+  "version": "1.0.0",
+  "description": " bank application ",
+  "default": "index.html",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sloomabh/Bankist-App.git"
+  },
+  "author": "salim ben halima",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sloomabh/Bankist-App/issues"
+  },
+  "homepage": "https://github.com/sloomabh/Bankist-App#readme",
+  "devDependencies": {
+    "parcel": "^2.0.0-rc.0"
+  }
+}
